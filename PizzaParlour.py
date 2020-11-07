@@ -55,10 +55,6 @@ api.add_resource(Intro, "/pizza")
 
 
 if __name__ == "__main__":
-<<<<<<< HEAD
-    app.run(debug=True)
-=======
-    app.run()
+    app.run(debug=True) #get rid of debug=True when submitting final version
 
 # run http://127.0.0.1:5000/pizza in web browser
->>>>>>> 8749e291d806504aefb3057889e82a854749b54c
