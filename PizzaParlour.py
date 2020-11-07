@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask # if does not work then run: sudo apt install python3-flask
 
 app = Flask("Assignment 2")
 
@@ -8,3 +8,5 @@ def welcome_pizza():
 
 if __name__ == "__main__":
     app.run()
+
+# run http://127.0.0.1:5000/pizza in web browser
