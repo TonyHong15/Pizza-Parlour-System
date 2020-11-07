@@ -11,7 +11,6 @@ class Food:
     def __init__(self, price):
         self.price = price
 
-
 class Drink(Food):
     pass
 
@@ -21,6 +20,9 @@ class PizzaType:
     def __init__(self):
         self.type_name = 'default'
         self.preparation_instructions = 'default'
+    def toJson(self):
+        return json.dumps(self, default=lambda o: o.__dict__).replace('\\"',"\"")
+
 
 class Pizza(Food):
     toppings: [str]
@@ -30,7 +32,7 @@ class Pizza(Food):
         self.toppings = ['sample toppings']
         self.pizza_type = type
     def toJson(self):
-        return json.dumps(self, default=lambda o: o.__dict__)
+        return json.dumps(self, default=lambda o: o.__dict__).replace('\\"',"\"")
 
 
 class Order:
@@ -38,18 +40,15 @@ class Order:
     def __init__(self):
         self.items = [Pizza(PizzaType())] #TODO: hardecoded for testing purposes currently, change later
     def toJson(self):
-        return json.dumps(self, default=lambda o: o.__dict__)
+        return json.dumps(self, default=lambda o: o.__dict__).replace('\\"',"\"")
 
 
 class Intro(Resource):
-
     def get(self):
         #below returns a json string representing an order
         order = Order()
-        jsonStr = json.dumps(order.toJson())
-        print(jsonStr)
-        print(json.loads(jsonStr))
-        return jsonStr
+        return  order.toJson()
+
 
 api.add_resource(Intro, "/pizza")
 
