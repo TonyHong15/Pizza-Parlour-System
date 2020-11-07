@@ -1,30 +1,38 @@
 from flask import Flask
-from flask_restful import Api, Resource
+from flask_restful import Api, Resource, reqparse
 import json
 
 
 app = Flask("Assignment 2")
 api = Api(app)
 
-class Food:
+pizza_args = reqparse.RequestParser()
+pizza_args.add_argument("pizzaType", type=str)
+pizza_args.add_argument("pizzaSize", type=str)
+pizza_args.add_argument("pizzaToppings", action='append', type=str)
+
+class JsonEncode:
+    def toJson(self):
+        return json.dumps(self, default=lambda o: o.__dict__).replace('\\"',"\"")
+
+class Food(JsonEncode):
     price: float
     def __init__(self, price):
         self.price = price
 
-class Drink(Food):
+class Drink(Food, JsonEncode):
     pass
 
-class PizzaType:
-    preparation_instructions: str
+class PizzaType(JsonEncode):
+    toppings: [str]
     type_name: str
     def __init__(self):
         self.type_name = 'default'
         self.preparation_instructions = 'default'
-    def toJson(self):
-        return json.dumps(self, default=lambda o: o.__dict__).replace('\\"',"\"")
+    
 
 
-class Pizza(Food):
+class Pizza(Food, JsonEncode):
     toppings: [str]
     pizza_type: PizzaType
     def __init__(self, type: PizzaType): #dependency injection use for Object PizzaType
@@ -35,7 +43,7 @@ class Pizza(Food):
         return json.dumps(self, default=lambda o: o.__dict__).replace('\\"',"\"")
 
 
-class Order:
+class Order(JsonEncode):
     items: [Food]
     def __init__(self):
         self.items = [Pizza(PizzaType())] #TODO: hardecoded for testing purposes currently, change later
@@ -43,15 +51,15 @@ class Order:
         return json.dumps(self, default=lambda o: o.__dict__).replace('\\"',"\"")
 
 
-class Intro(Resource):
-    def get(self):
+class OrderRequest(Resource):
+    def post(self):
         #below returns a json string representing an order
-        order = Order()
-        return  order.toJson()
+        args = pizza_args.parse_args()
+        print(args)
+        return 200
+        
 
-
-api.add_resource(Intro, "/pizza")
-
+api.add_resource(OrderRequest, "/pizza")
 
 if __name__ == "__main__":
     app.run(debug=True) #get rid of debug=True when submitting final version
