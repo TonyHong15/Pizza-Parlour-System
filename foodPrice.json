@@ -1,0 +1,4 @@
+{
+    "Pizza": {"Size": {"M": 10}, "Type": {"pepperoni": 1}, "Toppings": {"cheese": 1}},
+    "Drink": "tmp"
+}

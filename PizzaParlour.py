@@ -31,7 +31,6 @@ class PizzaType(JsonEncode):
         self.preparation_instructions = 'default'
     
 
-
 class Pizza(Food, JsonEncode):
     toppings: [str]
     pizza_type: PizzaType
@@ -48,6 +47,13 @@ class Order(JsonEncode):
 
 
 class OrderRequest(Resource):
+    foodPrice = {}
+    def __init__(self):
+        with open('foodPrice.json') as f:
+            self.foodPrice = json.loads(f.read())
+        # print(type(self.foodPrice))
+        # print(self.foodPrice["Pizza"]["Size"]["M"])
+
     def post(self):
         #below returns a json string representing an order
         args = pizza_args.parse_args()
