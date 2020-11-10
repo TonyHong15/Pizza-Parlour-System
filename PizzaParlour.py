@@ -39,16 +39,12 @@ class Pizza(Food, JsonEncode):
         super().__init__(5.00) #TODO: hardecoded for testing purposes currently, change later
         self.toppings = ['sample toppings']
         self.pizza_type = type
-    def toJson(self):
-        return json.dumps(self, default=lambda o: o.__dict__).replace('\\"',"\"")
 
 
 class Order(JsonEncode):
     items: [Food]
     def __init__(self):
         self.items = [Pizza(PizzaType())] #TODO: hardecoded for testing purposes currently, change later
-    def toJson(self):
-        return json.dumps(self, default=lambda o: o.__dict__).replace('\\"',"\"")
 
 
 class OrderRequest(Resource):
