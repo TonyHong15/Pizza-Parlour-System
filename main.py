@@ -21,6 +21,6 @@ def pizza_input():
 if __name__ == "__main__":
     print('Welcome to the Pizza Order Service')
     pizza = pizza_input()
-    print(pizza["pizzaToppings"])
+    # print(pizza["pizzaToppings"])
     response = requests.post(BASE + "pizza", pizza)
-    print(response.json())
+    # print(response.json())
