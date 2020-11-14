@@ -1,5 +1,5 @@
-# a2-starter
-Install necessary packages by running `pip install -r requirements.txt`
+# SETUP Instructions
+Install necessary packages by running `pip3 install -r requirements.txt`
 
 Run the main Flask module by running `python3 PizzaParlour.py`
 
@@ -12,3 +12,5 @@ sudo apt-get update
 sudo apt-get install python3-pip
 
 pip3 install pytest-cov  
+
+#
