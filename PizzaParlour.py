@@ -6,10 +6,19 @@ app = Flask("Assignment 2")
 api = Api(app)
 
 #argument parser when user sends information of a pizza
-pizza_args = reqparse.RequestParser()
-pizza_args.add_argument("pizzaType", type=str)
-pizza_args.add_argument("pizzaSize", type=str)
-pizza_args.add_argument("pizzaToppings", action='append', type=str)
+pizza_items_parser = reqparse.RequestParser()
+pizza_items_parser.add_argument("pizzaType", type=str)
+pizza_items_parser.add_argument("pizzaSize", type=str)
+pizza_items_parser.add_argument("pizzaToppings", action='append', type=str)
+
+
+#argument parser when user sends information of a drink
+drink_items_parser = reqparse.RequestParser()       
+drink_items_parser.add_argument("type", type=str)
+
+#file name constants
+FOODPRICE_FILE = 'foodPrice.json'
+PIZZATYPE_FILE = 'pizzaType.json'
 
 #global list containing all the orders in this session
 orders = []
@@ -41,8 +50,7 @@ class Drink(Food, JsonEncode):
         self.drink_type = drink_type
 
     def calculatePrice(self, drink_type):
-        drink_prices = read_from_json('foodPrice.json')["drink"]
-        # each additional topping is 50 cents
+        drink_prices = read_from_json(FOODPRICE_FILE)["drink"]
         return drink_prices[drink_type]
 
 #class representing a pizzaType object that all pizza's have to determine their properties
@@ -57,15 +65,17 @@ class PizzaType(JsonEncode):
 class Pizza(Food, JsonEncode):
     toppings: [str]
     pizza_type: PizzaType
+    size: str
     def __init__(self, pizza_type: PizzaType, size: str, toppings: []):
         if toppings is None :
             toppings = []
         super().__init__(self.calculatePrice(pizza_type, size, toppings))
         self.toppings = toppings
         self.pizza_type = pizza_type
+        self.size = size
 
     def calculatePrice(self, pizza_type: PizzaType, size: str, toppings: []):
-        pizza_prices = read_from_json('foodPrice.json')["pizza"]
+        pizza_prices = read_from_json(FOODPRICE_FILE)["pizza"]
         # each additional topping is 50 cents
         return pizza_prices["size"][size] + pizza_prices["type"][pizza_type.type_name] + len(toppings) * 0.5
 
@@ -112,45 +122,87 @@ class Factory:
 #Utility class that constructs our orders based on user input and database data
 class JsonUtility:
 
-    # creates a new order and adds to global order list
+    #creates pizza to add to a new order
     @staticmethod
-    def add_to_orders(order_dict):
-        new_order = Factory.create_Order()
-        new_order.addFood(JsonUtility.add_to_orders_helper(order_dict))
-        orders.append(new_order)
-        return new_order
-
-
-    #adds items to a new order
-    @staticmethod
-    def add_to_orders_helper(order_dict: dict):
-        pizza_types = read_from_json('pizzaType.json') 
+    def add_pizza_to_orders(order_dict: dict):
+        pizza_types = read_from_json(PIZZATYPE_FILE) 
         print(order_dict['pizzaToppings'])
         pizza_type_obj = Factory.create_PizzaType(order_dict['pizzaType'], pizza_types[order_dict['pizzaType']])
         pizza_obj = Factory.create_Pizza(pizza_type_obj, order_dict['pizzaSize'], order_dict['pizzaToppings'])
         return pizza_obj
+    #creates drink to add to a new order
+    @staticmethod
+    def add_drink_to_orders(order_dict: dict):
+        drink = Factory.create_Drink(order_dict['type'])
+        return drink
 
-#api resource object that handles requests to submit an order
-class OrderRequest(Resource):
+
+class AddPizzaToOrder(Resource):
     def post(self):
-        #below returns a json string representing an order
-        args = pizza_args.parse_args()
-        ju = JsonUtility()
-        order = ju.add_to_orders(args)
-        return order.toJson()
+        args = pizza_items_parser.parse_args()
+        print(args)
+        added_pizza = JsonUtility.add_pizza_to_orders(args)
+        orders[len(orders) - 1].addFood(added_pizza)
+        return added_pizza.toJson()
         
-api.add_resource(OrderRequest, "/pizza")
+api.add_resource(AddPizzaToOrder, "/submit_pizza")
+
+class AddDrinkToOrder(Resource):
+    def post(self):
+        args = drink_items_parser.parse_args()
+        print(args)
+        added_drink = JsonUtility.add_drink_to_orders(args)
+        orders[len(orders) - 1].addFood(added_drink)
+        return added_drink.toJson()
+        
+api.add_resource(AddDrinkToOrder, "/submit_drink")
+
+class CreateNewOrder(Resource):
+    def put(self):
+        new_order = Factory.create_Order()
+        orders.append(new_order)
+        return new_order.order_num
+    def get(self):
+        return orders[len(orders) - 1].toJson()
+
+api.add_resource(CreateNewOrder, "/submit_new_order")
 
 class PizzaTypes(Resource):
     def get(self):
-        return read_from_json('pizzaType.json')
+        return read_from_json(PIZZATYPE_FILE)
+
+api.add_resource(PizzaTypes, "/pizza_types")
 
 class FoodPrices(Resource):
     def get(self):
-        return read_from_json('foodPrice.json')
+        return read_from_json(FOODPRICE_FILE)
 
-api.add_resource(PizzaTypes, "/pizza_types")
 api.add_resource(FoodPrices, "/food_prices")
+
+class DrinkTypes(Resource):
+    def get(self):
+        foods = read_from_json(FOODPRICE_FILE)
+        return foods["drink"]
+
+api.add_resource(DrinkTypes, "/drink_types")
+
+class FindPizzaPrice(Resource):
+    def post(self):
+     args = pizza_items_parser.parse_args()
+     print(args)
+     pizza = JsonUtility.add_pizza_to_orders(args)
+     return pizza.price
+
+api.add_resource(FindPizzaPrice, "/find_pizza_price")
+
+class FindDrinkPrice(Resource):
+    def post(self):
+        args = drink_items_parser.parse_args()
+        print(args)
+        drink = JsonUtility.add_drink_to_orders(args)
+        return drink.price
+
+api.add_resource(FindDrinkPrice, "/find_drink_price")
 
 if __name__ == "__main__":
     app.run(debug=True) #get rid of debug=True when submitting final version
