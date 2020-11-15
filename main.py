@@ -46,11 +46,28 @@ def ask_for_menu() -> None:
     print("")
     print("Food Prices: ", json.dumps(get_food_prices(), indent=4))
 
+def pizza_app() -> None:
+    def get_user_input(): # includes error checking
+        display_str = "\n(Enter the number for each option) 1: menu, 2: order pizza, 3: order drink, 4. ask for pickup/delivery, 5. exit\n"
+        cur_input = input(display_str)
+        while not cur_input.isdigit():
+            cur_input = input("Invalid input "+ display_str)
+        return int(cur_input)
+        
+    u_input = get_user_input()
+    while u_input != 5:
+        if u_input == 1:
+            ask_for_menu()
+        elif u_input == 2:
+            pizza = pizza_input()
+            #response = requests.get(BASE + "pizza_types")
+            response = requests.post(BASE + "pizza", pizza)
+            print(response.json())
+        else:
+            return
+        u_input = get_user_input()
+
 
 if __name__ == "__main__":
     print('Welcome to the Pizza Order Service')
-    ask_for_menu()
-    pizza = pizza_input()
-    #response = requests.get(BASE + "pizza_types")
-    response = requests.post(BASE + "pizza", pizza)
-    print(response.json())
+    pizza_app()
