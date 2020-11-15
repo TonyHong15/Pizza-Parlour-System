@@ -141,6 +141,11 @@ class OrderRequest(Resource):
         
 api.add_resource(OrderRequest, "/pizza")
 
+class PizzaTypes(Resource):
+    def get(self):
+        return read_from_json('pizzaType.json')
+api.add_resource(PizzaTypes, "/pizza_types")
+
 if __name__ == "__main__":
     app.run(debug=True) #get rid of debug=True when submitting final version
 
