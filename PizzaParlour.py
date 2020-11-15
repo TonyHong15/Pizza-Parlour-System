@@ -174,6 +174,12 @@ class PizzaTypes(Resource):
 
 api.add_resource(PizzaTypes, "/pizza_types")
 
+class FoodPrices(Resource):
+    def get(self):
+        return read_from_json(FOODPRICE_FILE)
+
+api.add_resource(FoodPrices, "/food_prices")
+
 class DrinkTypes(Resource):
     def get(self):
         foods = read_from_json(FOODPRICE_FILE)
