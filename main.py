@@ -23,4 +23,4 @@ if __name__ == "__main__":
     pizza = pizza_input()
     # print(pizza["pizzaToppings"])
     response = requests.post(BASE + "pizza", pizza)
-    # print(response.json())
+    print(response.json())
