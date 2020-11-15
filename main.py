@@ -36,9 +36,20 @@ def pizza_input():
 def get_pizza_types():
     response = requests.get(BASE + "pizza_types")
     return response.json()
+    
+def get_food_prices():
+    response = requests.get(BASE + "food_prices")
+    return response.json()
+
+def ask_for_menu() -> None: 
+    print("Pizza Types: ", json.dumps(get_pizza_types(), indent=4, sort_keys=True))
+    print("")
+    print("Food Prices: ", json.dumps(get_food_prices(), indent=4))
+
 
 if __name__ == "__main__":
     print('Welcome to the Pizza Order Service')
+    ask_for_menu()
     pizza = pizza_input()
     #response = requests.get(BASE + "pizza_types")
     response = requests.post(BASE + "pizza", pizza)
