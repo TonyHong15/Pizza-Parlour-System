@@ -75,6 +75,25 @@ def create_order():
     else:
         print("order cancelled")
 
+def get_user_input(display_str): # ensures user enters an integer
+    cur_input = input(display_str)
+    while not cur_input.isdigit():
+        cur_input = input("Invalid input "+ display_str)
+    return int(cur_input)
+
+def get_orders():
+    response = requests.get(BASE + "get_orders")
+    return response.json()
+
+def update_order():
+    display_str = "enter the order number you would like to update: "
+    u_input = get_user_input(display_str)
+    orders = (json.loads(get_orders()))["orders_list"] # a list of orders
+    for order in orders:
+        print(order)
+    return
+
+    
 def get_pizza_types():
     response = requests.get(BASE + "pizza_types")
     return response.json()
@@ -142,22 +161,18 @@ def find_individual_pizza():
 
 
 def pizza_app() -> None:
-    def get_user_input(): # includes error checking
-        display_str = "\n(Enter the number for each option) 1: menu, 2: order pizza, 3: order drink, 4. ask for pickup/delivery, 5. exit\n"
-        cur_input = input(display_str)
-        while not cur_input.isdigit():
-            cur_input = input("Invalid input "+ display_str)
-        return int(cur_input)
-        
-    u_input = get_user_input()
+    display_str = "\n(Enter the number for each option) 1: menu, 2: order pizza/drink, 3: update order 4. ask for pickup/delivery, 5. exit\n"
+    u_input = get_user_input(display_str)
     while u_input != 5:
         if u_input == 1:
             ask_for_menu()
         elif u_input == 2:
             create_order()
+        elif u_input == 3:
+            update_order()
         else:
             return
-        u_input = get_user_input()
+        u_input = get_user_input(display_str)
 
 
 

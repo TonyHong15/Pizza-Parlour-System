@@ -22,6 +22,7 @@ PIZZATYPE_FILE = 'pizzaType.json'
 
 #global list containing all the orders in this session
 orders = []
+cur_order_num = 0
 
 #reads json files and returns dictionary based on filename
 def read_from_json(file_name: str):
@@ -87,7 +88,9 @@ class Order(JsonEncode):
     def __init__(self):
         self.price = 0
         self.items = []
-        self.order_num = len(orders)
+        global cur_order_num
+        self.order_num = cur_order_num
+        cur_order_num += 1
 
     #add food to order and update price
     def addFood(self, item: Food):
@@ -154,7 +157,7 @@ class AddDrinkToOrder(Resource):
         added_drink = JsonUtility.add_drink_to_orders(args)
         orders[len(orders) - 1].addFood(added_drink)
         return added_drink.toJson()
-        
+
 api.add_resource(AddDrinkToOrder, "/submit_drink")
 
 class CreateNewOrder(Resource):
@@ -186,6 +189,19 @@ class DrinkTypes(Resource):
 
 api.add_resource(DrinkTypes, "/drink_types")
 
+class GetOrders(Resource):
+    def get(self):
+        # jsonStr = json.dumps({"orders_list": orders})
+        # print(jsonStr)
+        # print(type(jsonStr), "11111111111111111111111")
+        tmp_orders = []
+        for order in orders:
+            print(order.toJson())
+            tmp_orders.append(order.toJson())
+        tmp_dict = {"orders_list": tmp_orders}
+        return json.dumps(tmp_dict)
+
+api.add_resource(GetOrders, "/get_orders")
 class FindPizzaPrice(Resource):
     def post(self):
      args = pizza_items_parser.parse_args()
