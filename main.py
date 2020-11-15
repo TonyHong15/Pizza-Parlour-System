@@ -3,8 +3,6 @@ import json
 BASE = "http://127.0.0.1:5000/"
 
 
-# def topping_entries(topping: str):
-
 def pizza_input():  
     pizza_types = get_pizza_types()
 
@@ -31,15 +29,56 @@ def pizza_input():
             print("Invalid topping")
         topping = input()
     pizza = {"pizzaType": type_pizza, "pizzaSize": size_pizza, "pizzaToppings": toppings}
+    response = requests.post(BASE + "submit_pizza", pizza)
+    print(response.json())
     return pizza
 
 def get_pizza_types():
     response = requests.get(BASE + "pizza_types")
     return response.json()
 
+def drink_input():
+    drink_types = get_drink_types()
+    print("**IMPORTANT** The types of drinks available include:")
+    for types in drink_types:
+        print(types)
+    type_drink = input("Enter the type of drink you want: ")
+    while (type_drink not in drink_types):
+        for types in drink_types:
+            print(types)
+        type_drink = input("please enter a valid drink type from above: ")
+    drink = {"type": type_drink}
+    response = requests.post(BASE + "submit_drink", drink)
+    print(response.json())
+    return drink
+
+def get_drink_types():
+    response = requests.get(BASE + "drink_types")
+    return response.json()
+
+def create_order():
+    print("Creating a new Order")
+    print("What type of item would you like to add to this order?")
+    print("Enter 'pizza' to add a Pizza, 'drink' to add a Drink or '1' to cancel this order")
+    item_type = input()
+    if(item_type != '1'):
+        response = requests.put(BASE + "submit_new_order")
+        print(response.json())
+        while(item_type != '1'):
+            if (item_type == 'pizza'):
+                pizza_input()
+            elif (item_type == 'drink'):
+                drink_input()
+            else: 
+                print("Invalid Item type")
+            print("Would you like to enter another item to this order?")
+            print("Enter 'pizza' to add another Pizza, 'drink' to add another Drink or '1' to finish this order")
+            item_type = input()
+        response = requests.get(BASE + "submit_new_order")
+        print(response.json())
+    else:
+        print("order cancelled")
+
 if __name__ == "__main__":
     print('Welcome to the Pizza Order Service')
-    pizza = pizza_input()
-    #response = requests.get(BASE + "pizza_types")
-    response = requests.post(BASE + "pizza", pizza)
-    print(response.json())
+    create_order()
