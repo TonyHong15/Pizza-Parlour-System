@@ -51,7 +51,6 @@ class Drink(Food, JsonEncode):
 
     def calculatePrice(self, drink_type):
         drink_prices = read_from_json(FOODPRICE_FILE)["drink"]
-        # each additional topping is 50 cents
         return drink_prices[drink_type]
 
 #class representing a pizzaType object that all pizza's have to determine their properties
@@ -186,6 +185,24 @@ class DrinkTypes(Resource):
         return foods["drink"]
 
 api.add_resource(DrinkTypes, "/drink_types")
+
+class FindPizzaPrice(Resource):
+    def post(self):
+     args = pizza_items_parser.parse_args()
+     print(args)
+     pizza = JsonUtility.add_pizza_to_orders(args)
+     return pizza.price
+
+api.add_resource(FindPizzaPrice, "/find_pizza_price")
+
+class FindDrinkPrice(Resource):
+    def post(self):
+        args = drink_items_parser.parse_args()
+        print(args)
+        drink = JsonUtility.add_drink_to_orders(args)
+        return drink.price
+
+api.add_resource(FindDrinkPrice, "/find_drink_price")
 
 if __name__ == "__main__":
     app.run(debug=True) #get rid of debug=True when submitting final version
