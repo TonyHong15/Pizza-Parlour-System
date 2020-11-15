@@ -1,0 +1,6 @@
+{
+    "pepperoni": ["pepperoni"],
+    "margherita": ["tomatoes"],
+    "vegetarian": ["mushrooms", "tomatoes", "jalapenos"],
+    "neopolitan": ["tomatoes", "jalapenos"]
+}
