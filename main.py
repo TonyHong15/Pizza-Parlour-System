@@ -77,7 +77,7 @@ def create_order():
 
 def get_user_input(display_str): # ensures user enters an integer
     cur_input = input(display_str)
-    while not cur_input.isdigit():
+    while cur_input != 1 and cur_input != '1' and cur_input != '2' and cur_input != '3' and cur_input != '4' and cur_input != '5' and cur_input != '6' and cur_input != '7' :
         cur_input = input("Invalid input "+ display_str)
     return int(cur_input)
 
@@ -89,6 +89,8 @@ def update_order(): # ask the user to re-enter what they want for the same order
     display_str = "Enter the order number you would like to update: "
     order_num = get_user_input(display_str)
     orders = (json.loads(get_orders()))["orders_list"] # a list of orders
+    if len(orders) == 0 :
+        print("Invalid order number")
     for order_str in orders:
         order = json.loads(order_str)
         if order["order_num"] == order_num:
@@ -99,6 +101,7 @@ def update_order(): # ask the user to re-enter what they want for the same order
             update_order_compiling_order(item_type, order_num)
         else:
             print("Invalid order number")
+    
 
 def update_order_compiling_order(item_type: str, order_num: int):
     if(item_type != '1'):
