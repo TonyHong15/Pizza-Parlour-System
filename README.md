@@ -1,5 +1,5 @@
 # SETUP Instructions
-### Note that hese instructions are for linux based systems and when running on windows, the '3' in pip3 and python3 are to be omitted
+### Note that these instructions are for linux based systems and when running on windows, the '3' in pip3 and python3 are to be omitted
 Install necessary packages by running `pip3 install -r requirements.txt`
 
 Run the main Flask module by running `python3 PizzaParlour.py`
@@ -17,7 +17,7 @@ pip3 install pytest-cov
 Run the CLI with `python3 main.py`
 
 # Pair Programming Process
-For this assignment, we pair programmed the two features: submit a new order and asking for the menu.\
+For this assignment, we pair programmed the two features: submit a new order and asking for the menu.
 ## Pair Programming Submit a new Order ##
 This feature was the first feature we attempted for this assignment. Before we started, we wrote 
 a rough outline on how our objects were going to be related as well as discussing some of the API calls
