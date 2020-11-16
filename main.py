@@ -86,11 +86,33 @@ def get_orders():
     return response.json()
 
 def update_order():
-    display_str = "enter the order number you would like to update: "
-    u_input = get_user_input(display_str)
+    display_str = "Enter the order number you would like to update: "
+    order_num = get_user_input(display_str)
     orders = (json.loads(get_orders()))["orders_list"] # a list of orders
-    for order in orders:
-        print(order)
+    for order_str in orders:
+        order = json.loads(order_str)
+        if order["order_num"] == order_num:
+            # order is an order dictionary 
+            items = order["items"]
+            for i in range(len(items)):
+                input_str = "would you like to remove (y or n) from " + json.dumps(items[i])
+                user_input = input(input_str)
+                if user_input == "y":
+                    del items[i]
+                    order["items"] = items
+                    print("order !!!!!!!!!!!!!!:", order)
+                    response = requests.post(BASE + "update_order", order)
+                    print(response.json())
+                    return order
+    print("Your order is not found or you did not modify any order")
+    return
+
+def cancel_order():
+    display_str = "Enter the order number you would like to cancel: "
+    order_num = get_user_input(display_str)
+    delete_order = {"order_to_delete": order_num}
+    response = requests.post(BASE + "delete_order", delete_order)
+    print(response.json())
     return
 
     
@@ -161,7 +183,7 @@ def find_individual_pizza():
 
 
 def pizza_app() -> None:
-    display_str = "\n(Enter the number for each option) 1: menu, 2: order pizza/drink, 3: update order 4. ask for pickup/delivery, 5. exit\n"
+    display_str = "\n(Enter the number for each option) 1: menu, 2: order pizza/drink, 3: cancel order 4. ask for pickup/delivery, 5. exit\n"
     u_input = get_user_input(display_str)
     while u_input != 5:
         if u_input == 1:
@@ -169,7 +191,7 @@ def pizza_app() -> None:
         elif u_input == 2:
             create_order()
         elif u_input == 3:
-            update_order()
+            cancel_order()
         else:
             return
         u_input = get_user_input(display_str)

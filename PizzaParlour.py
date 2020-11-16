@@ -16,6 +16,14 @@ pizza_items_parser.add_argument("pizzaToppings", action='append', type=str)
 drink_items_parser = reqparse.RequestParser()       
 drink_items_parser.add_argument("type", type=str)
 
+#argument parser when user updates an order
+update_items_parser = reqparse.RequestParser()
+update_items_parser.add_argument("order_to_update", type=str)
+
+#argument parser when user deletes an order
+delete_items_parser = reqparse.RequestParser()
+delete_items_parser.add_argument("order_to_delete", type=int)
+
 #file name constants
 FOODPRICE_FILE = 'foodPrice.json'
 PIZZATYPE_FILE = 'pizzaType.json'
@@ -189,19 +197,6 @@ class DrinkTypes(Resource):
 
 api.add_resource(DrinkTypes, "/drink_types")
 
-class GetOrders(Resource):
-    def get(self):
-        # jsonStr = json.dumps({"orders_list": orders})
-        # print(jsonStr)
-        # print(type(jsonStr), "11111111111111111111111")
-        tmp_orders = []
-        for order in orders:
-            print(order.toJson())
-            tmp_orders.append(order.toJson())
-        tmp_dict = {"orders_list": tmp_orders}
-        return json.dumps(tmp_dict)
-
-api.add_resource(GetOrders, "/get_orders")
 class FindPizzaPrice(Resource):
     def post(self):
      args = pizza_items_parser.parse_args()
@@ -219,6 +214,40 @@ class FindDrinkPrice(Resource):
         return drink.price
 
 api.add_resource(FindDrinkPrice, "/find_drink_price")
+
+class GetOrders(Resource):
+    def get(self):
+        tmp_orders = []
+        for order in orders:
+            print(order.toJson())
+            tmp_orders.append(order.toJson())
+        tmp_dict = {"orders_list": tmp_orders}
+        return json.dumps(tmp_dict)
+
+api.add_resource(GetOrders, "/get_orders")
+
+class UpdateOrder(Resource):
+    def post(self):
+        args = update_items_parser.parse_args()
+        order_to_update = args["order_to_update"]        
+        print(order_to_update)
+        for i in range(len(orders)):
+            if order_to_update["order_num"] == i:
+                orders[i] = None
+        return args.toJson()
+
+api.add_resource(UpdateOrder, "/update_order")
+
+class DeleteOrder(Resource):
+    def post(self):
+        args = delete_items_parser.parse_args()
+        order_to_delete = args["order_to_delete"]    
+        if (order_to_delete >= len(orders) or orders[order_to_delete] == None):
+            return "Not a valid order"
+        orders[order_to_delete] = None
+        return "deleted order "+str(order_to_delete)
+
+api.add_resource(DeleteOrder, "/delete_order")
 
 if __name__ == "__main__":
     app.run(debug=True) #get rid of debug=True when submitting final version
