@@ -1,6 +1,1 @@
-{
-    "pepperoni": ["pepperoni"],
-    "margherita": ["tomatoes"],
-    "vegetarian": ["mushrooms", "tomatoes", "jalapenos"],
-    "neopolitan": ["tomatoes", "jalapenos"]
-}
+{"pepperoni": ["pepperoni"], "margherita": ["tomatoes"], "vegetarian": ["mushrooms", "tomatoes", "jalapenos"], "neopolitan": ["tomatoes", "jalapenos"], "canadian": ["olives"]}

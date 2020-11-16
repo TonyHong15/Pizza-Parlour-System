@@ -11,6 +11,10 @@ pizza_items_parser.add_argument("pizzaType", type=str)
 pizza_items_parser.add_argument("pizzaSize", type=str)
 pizza_items_parser.add_argument("pizzaToppings", action='append', type=str)
 
+#argument parser when user sends information of new pizza type
+pizza_type_parser = reqparse.RequestParser()
+pizza_type_parser.add_argument("pizzaType", type=str)
+pizza_type_parser.add_argument("pizzaToppings", action='append', type=str)
 
 #argument parser when user sends information of a drink
 drink_items_parser = reqparse.RequestParser()       
@@ -147,6 +151,25 @@ class JsonUtility:
         drink = Factory.create_Drink(order_dict['type'])
         return drink
 
+    #writes new type to json
+    @staticmethod
+    def add_type_to_json(type_dict: dict):
+        pizza_types = read_from_json(PIZZATYPE_FILE)
+        pizza_types[type_dict["pizzaType"]] = type_dict["pizzaToppings"]
+        with open('pizzaType.json', 'w') as file:
+            json.dump(pizza_types, file)
+        food_info = read_from_json(FOODPRICE_FILE)
+        food_info["pizza"]["type"][type_dict["pizzaType"]] = 0.5 * len(type_dict["pizzaToppings"])
+        with open('foodPrice.json', 'w') as file:
+            json.dump(food_info, file)
+            
+class AddPizzaType(Resource):
+    def post(self):
+        args = pizza_type_parser.parse_args()
+        JsonUtility.add_type_to_json(args)
+        return "Successfully added your custom type!"
+
+api.add_resource(AddPizzaType, "/submit_pizza_type")
 
 class AddPizzaToOrder(Resource):
     def post(self):
@@ -242,7 +265,9 @@ api.add_resource(UpdateOrder, "/update_order")
 class CancelOrder(Resource):
     def post(self):
         args = delete_items_parser.parse_args()
-        order_to_delete = args["order_to_delete"]    
+        order_to_delete = args["order_to_delete"]  
+        print(order_to_delete)
+        print(type(order_to_delete))  
         if (order_to_delete >= len(orders) or orders[order_to_delete] == None):
             return "Not a valid order"
         orders[order_to_delete] = None
