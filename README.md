@@ -48,7 +48,7 @@ future in the software engineering industry.
 Prior to starting our code, we designed a basic object relationship that would govern our back-end server. We had both Drinks and pizza inherit from
 a more generic food class. Orders will hold food elements and when accessing each one, we will let polymorphism do its work. Finally, we would have
 a global variable hold a list of orders during this session which would act as our in memory storage. \
-When coding the backend, we kept the single-reponsibility principle in mind and made sure each method wasn't doing to much, dividing into
+When coding the backend, we kept the single-reponsibility principle in mind and made sure each method wasn't doing too much, dividing into
 helper methods when necessary as well as making each class responsible for one thing.\
 We also kept the dependency inversion principle in mind and followed it when we implemented our factory design pattern where we created a class whose
 sole responsibility was to create objects. 
