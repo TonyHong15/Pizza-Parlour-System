@@ -18,7 +18,7 @@ drink_items_parser.add_argument("type", type=str)
 
 #argument parser when user updates an order
 update_items_parser = reqparse.RequestParser()
-update_items_parser.add_argument("order_to_update", type=str)
+update_items_parser.add_argument("order_to_update", type=int)
 
 #argument parser when user deletes an order
 delete_items_parser = reqparse.RequestParser()
@@ -219,8 +219,9 @@ class GetOrders(Resource):
     def get(self):
         tmp_orders = []
         for order in orders:
-            print(order.toJson())
-            tmp_orders.append(order.toJson())
+            if order:
+                print(order.toJson())
+                tmp_orders.append(order.toJson())
         tmp_dict = {"orders_list": tmp_orders}
         return json.dumps(tmp_dict)
 
@@ -229,16 +230,16 @@ api.add_resource(GetOrders, "/get_orders")
 class UpdateOrder(Resource):
     def post(self):
         args = update_items_parser.parse_args()
-        order_to_update = args["order_to_update"]        
-        print(order_to_update)
-        for i in range(len(orders)):
-            if order_to_update["order_num"] == i:
-                orders[i] = None
-        return args.toJson()
+        order_to_update = args["order_to_update"]  
+        orders[len(orders)-1].order_num = order_to_update  
+        orders[order_to_update] = orders[len(orders)-1]
+        orders[len(orders)-1] = None
+        print("orders: ", orders)
+        return "updated order "+str(order_to_update)
 
 api.add_resource(UpdateOrder, "/update_order")
 
-class DeleteOrder(Resource):
+class CancelOrder(Resource):
     def post(self):
         args = delete_items_parser.parse_args()
         order_to_delete = args["order_to_delete"]    
@@ -247,7 +248,7 @@ class DeleteOrder(Resource):
         orders[order_to_delete] = None
         return "deleted order "+str(order_to_delete)
 
-api.add_resource(DeleteOrder, "/delete_order")
+api.add_resource(CancelOrder, "/delete_order")
 
 if __name__ == "__main__":
     app.run(debug=True) #get rid of debug=True when submitting final version

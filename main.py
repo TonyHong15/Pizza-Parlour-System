@@ -85,7 +85,13 @@ def get_orders():
     response = requests.get(BASE + "get_orders")
     return response.json()
 
-def update_order():
+def update_order(): # ask the user to re-enter what they want for the same order
+    def update_order_helper(order_num):
+        orders = (json.loads(get_orders()))["orders_list"] # a list of orders
+        update = {"order_to_update": order_num}
+        response = requests.post(BASE + "update_order", update)
+        print(response.json())
+
     display_str = "Enter the order number you would like to update: "
     order_num = get_user_input(display_str)
     orders = (json.loads(get_orders()))["orders_list"] # a list of orders
@@ -93,17 +99,29 @@ def update_order():
         order = json.loads(order_str)
         if order["order_num"] == order_num:
             # order is an order dictionary 
-            items = order["items"]
-            for i in range(len(items)):
-                input_str = "would you like to remove (y or n) from " + json.dumps(items[i])
-                user_input = input(input_str)
-                if user_input == "y":
-                    del items[i]
-                    order["items"] = items
-                    print("order !!!!!!!!!!!!!!:", order)
-                    response = requests.post(BASE + "update_order", order)
-                    print(response.json())
-                    return order
+            print("What type of item would you like to add to order "+ str(order_num) + "?")
+            print("Enter 'pizza' to add a Pizza, 'drink' to add a Drink or '1' to cancel this update")
+            item_type = input()
+            if(item_type != '1'):
+                response = requests.put(BASE + "submit_new_order")
+                while(item_type != '1'):
+                    if (item_type == 'pizza'):
+                        pizza_input()
+                    elif (item_type == 'drink'):
+                        drink_input()
+                    else: 
+                        print("Invalid Item type")
+                    print("Would you like to enter another item to this order?")
+                    print("Enter 'pizza' to add another Pizza, 'drink' to add another Drink or '1' to finish this order")
+                    item_type = input()
+                print(response.json())
+                response = requests.get(BASE + "submit_new_order")
+                # remove the new order in orders and replace orders[order_num-1] by the new order
+                update_order_helper(order_num)
+            else:
+                print("update cancelled")
+                return 
+            return
     print("Your order is not found or you did not modify any order")
     return
 
@@ -183,15 +201,17 @@ def find_individual_pizza():
 
 
 def pizza_app() -> None:
-    display_str = "\n(Enter the number for each option) 1: menu, 2: order pizza/drink, 3: cancel order 4. ask for pickup/delivery, 5. exit\n"
+    display_str = "\n(Enter the number for each option) 1: menu, 2: order pizza/drink, 3: cancel order, 4: update order 5: ask for pickup/delivery, 6: exit\n"
     u_input = get_user_input(display_str)
-    while u_input != 5:
+    while u_input != 6:
         if u_input == 1:
             ask_for_menu()
         elif u_input == 2:
             create_order()
         elif u_input == 3:
             cancel_order()
+        elif u_input == 4:
+            update_order()
         else:
             return
         u_input = get_user_input(display_str)
