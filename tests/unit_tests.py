@@ -1,4 +1,5 @@
-from PizzaParlour import app
+from ..PizzaParlour import app
+from ..main import *
 
 # do the following if "pytest --cov-report term --cov=. tests/unit_tests.py" gives error
 # sudo apt-get update
@@ -10,3 +11,6 @@ def test_pizza():
 
     assert response.status_code == 200
     assert response.data == b'Welcome to Pizza Planet!'
+
+# def test_drink_input():
+#     assert create_order() == None
